@@ -1,5 +1,8 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
+import 'package:onemovies/utils/appwrite/auth.dart';
 import 'package:onemovies/utils/icon_fonts.dart';
+import 'package:provider/provider.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -11,12 +14,10 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   bool _passwordHidden = false;
   bool _repeatpasswordHidden = false;
-  
 
   late final TextEditingController _email;
   late final TextEditingController _password;
   late final TextEditingController _repeatPassword;
-  
 
   @override
   void initState() {
@@ -34,8 +35,34 @@ class _SignUpState extends State<SignUp> {
     super.dispose();
   }
 
-  void handleSubmit() {
-    print(_email);
+  void handleSignUp() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [CircularProgressIndicator()],
+          ),
+        );
+      },
+    );
+
+    try{
+      final Auth appwrite = context.read<Auth> ();
+      await appwrite.createUserWithPasswordandEmail(email: _email.text, password: _password.text);
+      Navigator.pop(context);
+      const snackbar = SnackBar(content: Text("account created"));
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    } on AppwriteException catch(e){
+      final error = e.message.toString();
+      print(error);
+      const snackbar = SnackBar(content: Text("somethong Went wrong!!"));
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    }
   }
 
   @override
@@ -43,8 +70,8 @@ class _SignUpState extends State<SignUp> {
     return Scaffold(
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(10, 50, 10, 50),
+
         // alignment: Alignment.topCenter,
-        
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -217,13 +244,11 @@ class _SignUpState extends State<SignUp> {
                     focusColor: Color(0xffD7263D),
                   ),
                 ),
-                
-               
 
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
-                    onPressed: handleSubmit,
+                    onPressed: handleSignUp,
                     style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(
                         Color(0xffD7263D),
@@ -259,18 +284,25 @@ class _SignUpState extends State<SignUp> {
             Row(
               spacing: 20,
               children: <Widget>[
-                Expanded(child: Divider(color: Color.fromARGB(255, 95, 95, 95),)),
+                Expanded(
+                  child: Divider(color: Color.fromARGB(255, 95, 95, 95)),
+                ),
 
-                Text("Or Continue with", style: TextStyle(fontSize: 15, fontFamily: 'Ubuntu'),),
+                Text(
+                  "Or Continue with",
+                  style: TextStyle(fontSize: 15, fontFamily: 'Ubuntu'),
+                ),
 
-                Expanded(child: Divider(color: Color.fromARGB(255, 95, 95, 95),)),
+                Expanded(
+                  child: Divider(color: Color.fromARGB(255, 95, 95, 95)),
+                ),
               ],
             ),
 
             SizedBox(
               width: double.infinity,
               child: TextButton(
-                onPressed: handleSubmit,
+                onPressed: handleSignUp,
                 style: ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll(
                     Color.fromARGB(115, 93, 93, 94),
@@ -317,15 +349,29 @@ class _SignUpState extends State<SignUp> {
               spacing: 3,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Already have an account?", style: TextStyle(fontFamily: 'Ubuntu', fontSize: 15, color: Color(0xffEAEAEA)),),
+                Text(
+                  "Already have an account?",
+                  style: TextStyle(
+                    fontFamily: 'Ubuntu',
+                    fontSize: 15,
+                    color: Color(0xffEAEAEA),
+                  ),
+                ),
                 GestureDetector(
                   onTap: () {
                     print("tapped");
                   },
-                  child: Text("Login", style: TextStyle(fontFamily: 'Ubuntu', fontSize: 15, color: Color(0xffD7263D)),),
-                )
+                  child: Text(
+                    "Login",
+                    style: TextStyle(
+                      fontFamily: 'Ubuntu',
+                      fontSize: 15,
+                      color: Color(0xffD7263D),
+                    ),
+                  ),
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),

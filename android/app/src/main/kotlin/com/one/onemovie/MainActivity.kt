@@ -1,4 +1,4 @@
-package com.example.onemovies
+package com.one.onemovie
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:onemovies/utils/theme/custom_theme.dart';
+// import 'package:onemovies/utils/theme/custom_theme.dart';
 
 class TAppTheme {
   TAppTheme._();

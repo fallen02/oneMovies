@@ -8,7 +8,12 @@ class TAppTheme {
     useMaterial3: true,
     brightness: Brightness.light,
     scaffoldBackgroundColor: Color(0xffEAEAEA),
-    primaryColor: Color(0xffD7263D),
+    // primaryColor: Color(0xffD7263D),
+    colorScheme: ColorScheme.fromSwatch().copyWith(
+      brightness: Brightness.light,
+      primary: Color(0xff02182B),
+      secondary: Color(0xffD7263D),
+    )
     // TODO: create a textTheme with fonts
     // textTheme: TTextTheme.lightTextTheme,
   );
@@ -16,7 +21,12 @@ class TAppTheme {
     useMaterial3: true,
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Color(0xff02182B),
-    primaryColor: Color(0xffD7263D),
+    colorScheme: ColorScheme.fromSwatch().copyWith(
+      brightness: Brightness.dark,
+      primary: Color(0xffEAEAEA),
+      secondary: Color(0xffD7263D),
+      // onPrimary: Color(0xff02182B),
+    )
     // TODO: create a textTheme with fonts
     // textTheme: TTextTheme.darkTextTheme,
   );

@@ -1,5 +1,10 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
+import 'package:onemovies/screens/main_page.dart';
+import 'package:onemovies/screens/sign_up.dart';
+import 'package:onemovies/utils/appwrite/auth.dart';
 import 'package:onemovies/utils/icon_fonts.dart';
+import 'package:provider/provider.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -28,8 +33,39 @@ class _SignInState extends State<SignIn> {
     super.dispose();
   }
 
-  void handleSubmit() {
-    print(_email);
+  void handleSubmit() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [CircularProgressIndicator()],
+          ),
+        );
+      },
+    );
+
+    try {
+      final Auth appwrite = context.read<Auth>();
+      await appwrite.loginWithEmailandPassword(
+        email: _email.text,
+        password: _password.text,
+      );
+      Navigator.pop(context);
+      const snackbar = SnackBar(content: Text("Logged In successfully"));
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MainPage()),
+      );
+    } on AppwriteException catch (e) {
+      Navigator.pop(context);
+      final snackbar = SnackBar(content: Text(e.message.toString()));
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    }
   }
 
   @override
@@ -37,8 +73,8 @@ class _SignInState extends State<SignIn> {
     return Scaffold(
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(10, 50, 10, 50),
+
         // alignment: Alignment.topCenter,
-        
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -203,11 +239,18 @@ class _SignInState extends State<SignIn> {
             Row(
               spacing: 20,
               children: <Widget>[
-                Expanded(child: Divider(color: Color.fromARGB(255, 95, 95, 95),)),
+                Expanded(
+                  child: Divider(color: Color.fromARGB(255, 95, 95, 95)),
+                ),
 
-                Text("Or Continue with", style: TextStyle(fontSize: 15, fontFamily: 'Ubuntu'),),
+                Text(
+                  "Or Continue with",
+                  style: TextStyle(fontSize: 15, fontFamily: 'Ubuntu'),
+                ),
 
-                Expanded(child: Divider(color: Color.fromARGB(255, 95, 95, 95),)),
+                Expanded(
+                  child: Divider(color: Color.fromARGB(255, 95, 95, 95)),
+                ),
               ],
             ),
 
@@ -261,15 +304,32 @@ class _SignInState extends State<SignIn> {
               spacing: 3,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Don't have an acount?", style: TextStyle(fontFamily: 'Ubuntu', fontSize: 15, color: Color(0xffEAEAEA)),),
+                Text(
+                  "Don't have an acount?",
+                  style: TextStyle(
+                    fontFamily: 'Ubuntu',
+                    fontSize: 15,
+                    color: Color(0xffEAEAEA),
+                  ),
+                ),
                 GestureDetector(
                   onTap: () {
-                    print("tapped");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignUp()),
+                    );
                   },
-                  child: Text("Sign Up", style: TextStyle(fontFamily: 'Ubuntu', fontSize: 15, color: Color(0xffD7263D)),),
-                )
+                  child: Text(
+                    "Sign Up",
+                    style: TextStyle(
+                      fontFamily: 'Ubuntu',
+                      fontSize: 15,
+                      color: Color(0xffD7263D),
+                    ),
+                  ),
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),

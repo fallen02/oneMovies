@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
+import 'package:onemovies/screens/sign_in.dart';
 import 'package:onemovies/utils/appwrite/auth.dart';
 import 'package:onemovies/utils/icon_fonts.dart';
 import 'package:provider/provider.dart';
@@ -50,17 +51,22 @@ class _SignUpState extends State<SignUp> {
       },
     );
 
-    try{
-      final Auth appwrite = context.read<Auth> ();
-      await appwrite.createUserWithPasswordandEmail(email: _email.text, password: _password.text);
+    try {
+      final Auth appwrite = context.read<Auth>();
+      await appwrite.createUserWithPasswordandEmail(
+        email: _email.text,
+        password: _password.text,
+      );
       Navigator.pop(context);
       const snackbar = SnackBar(content: Text("account created"));
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
-    } on AppwriteException catch(e){
-      final error = e.message.toString();
-      print(error);
-      const snackbar = SnackBar(content: Text("somethong Went wrong!!"));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SignIn()),
+      );
+    } on AppwriteException catch (e) {
       Navigator.pop(context);
+      final snackbar = SnackBar(content: Text(e.message.toString()));
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
     }
   }
@@ -359,7 +365,10 @@ class _SignUpState extends State<SignUp> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    print("tapped");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignIn()),
+                    );
                   },
                   child: Text(
                     "Login",

@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:onemovies/screens/main_page.dart';
 import 'package:onemovies/screens/sign_in.dart';
-import 'package:onemovies/screens/sign_up.dart';
 import 'package:onemovies/utils/appwrite/auth.dart';
 import 'package:onemovies/utils/theme/theme.dart';
 import 'package:provider/provider.dart';
-// import 'package:onemovies/screens/sign_up.dart';
-
-// import 'package:onemovies/screens/home.dart';
-// import 'package:onemovies/screens/sign_in.dart';
 
 void main() {
   // runApp(const MyApp());
@@ -21,15 +17,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
     final value = context.watch<Auth>().status;
-    print(value);
+    // final user = context.watch<Auth>().currentUser;
+    // print(value);
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'One Movies',
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
       // home: const HomeScreen(title: 'One Movies'),
-      home: const SignUp(),
+      home: value == AuthStatus.uninitialized
+          ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+          : value == AuthStatus.authenticated
+          ? const MainPage()
+          : const SignIn(),
     );
   }
 }

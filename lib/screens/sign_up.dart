@@ -1,20 +1,20 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onemovies/providers/auth_provider.dart';
 import 'package:onemovies/screens/sign_in.dart';
-import 'package:onemovies/utils/appwrite/auth.dart';
 import 'package:onemovies/utils/icon_fonts.dart';
-import 'package:provider/provider.dart';
 
-class SignUp extends StatefulWidget {
+class SignUp extends ConsumerStatefulWidget {
   const SignUp({super.key});
 
   @override
-  State<SignUp> createState() => _SignUpState();
+  ConsumerState<SignUp> createState() => _SignUpState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignUpState extends ConsumerState<SignUp> {
   bool _passwordHidden = false;
-  bool _repeatpasswordHidden = false;
+  bool _repeatPasswordHidden = false;
 
   late final TextEditingController _email;
   late final TextEditingController _password;
@@ -22,10 +22,10 @@ class _SignUpState extends State<SignUp> {
 
   @override
   void initState() {
+    super.initState();
     _email = TextEditingController();
     _password = TextEditingController();
     _repeatPassword = TextEditingController();
-    super.initState();
   }
 
   @override
@@ -36,38 +36,46 @@ class _SignUpState extends State<SignUp> {
     super.dispose();
   }
 
-  void handleSignUp() async {
+  Future<void> handleSignUp() async {
+    if (_password.text != _repeatPassword.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Passwords do not match")),
+      );
+      return;
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [CircularProgressIndicator()],
-          ),
-        );
-      },
+      builder: (_) => const Center(
+        child: CircularProgressIndicator(),
+      ),
     );
 
     try {
-      final Auth appwrite = context.read<Auth>();
-      await appwrite.createUserWithPasswordandEmail(
-        email: _email.text,
-        password: _password.text,
+      await ref
+          .read(authProvider.notifier)
+          .createUserWithPasswordandEmail(
+            email: _email.text.trim(),
+            password: _password.text.trim(),
+          );
+
+      if (mounted) Navigator.pop(context);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Account created")),
       );
-      Navigator.pop(context);
-      const snackbar = SnackBar(content: Text("account created"));
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
-      Navigator.push(
+
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => SignIn()),
+        MaterialPageRoute(builder: (_) => const SignIn()),
       );
     } on AppwriteException catch (e) {
-      Navigator.pop(context);
-      final snackbar = SnackBar(content: Text(e.message.toString()));
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      if (mounted) Navigator.pop(context);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? "Signup failed")),
+      );
     }
   }
 
@@ -75,48 +83,29 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(10, 50, 10, 50),
-
-        // alignment: Alignment.topCenter,
+        padding: const EdgeInsets.fromLTRB(10, 50, 10, 50),
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           spacing: 20,
           children: [
             Row(
               children: [
                 IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Broken.arrow_left_2,
-                    size: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Broken.arrow_left_2, size: 30),
                 ),
               ],
             ),
-            Column(
-              // crossAxisAlignment: CrossAxisAlignment.center,
-              spacing: 20,
-              children: [
-                Image.network(
-                  'https://placehold.co/150.png',
-                  loadingBuilder: (context, child, progress) {
-                    return progress == null
-                        ? child
-                        : LinearProgressIndicator(
-                            backgroundColor: Color(0xffD7263D),
-                          );
-                  },
-                ),
 
+            Column(
+              spacing: 20,
+              children: const [
+                Image(image: AssetImage('assets/icons/icon.png'), width: 150),
                 Text(
                   "Sign Up",
                   style: TextStyle(
                     fontFamily: 'OpenSans',
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 0.4,
                   ),
                 ),
               ],
@@ -202,12 +191,13 @@ class _SignUpState extends State<SignUp> {
                     focusColor: Color(0xffD7263D),
                   ),
                 ),
-                TextField(
+                
+                 TextField(
                   controller: _repeatPassword,
                   textAlign: TextAlign.start,
                   enableSuggestions: false,
                   autocorrect: false,
-                  obscureText: !_repeatpasswordHidden,
+                  obscureText: !_repeatPasswordHidden,
                   decoration: InputDecoration(
                     hintText: 'Enter Password...',
                     prefixIcon: Icon(Broken.check, size: 20),
@@ -221,12 +211,14 @@ class _SignUpState extends State<SignUp> {
                       child: IconButton(
                         onPressed: () {
                           setState(() {
-                            _repeatpasswordHidden = !_repeatpasswordHidden;
-                          });
+                          _repeatPasswordHidden =
+                              !_repeatPasswordHidden;
+                        });
                         },
                         icon: Icon(
-                          _repeatpasswordHidden ? Broken.eye : Broken.eye_slash,
-                          size: 20,
+                           _repeatPasswordHidden
+                            ? Broken.eye
+                            : Broken.eye_slash,
                         ),
                       ),
                     ),
@@ -250,133 +242,32 @@ class _SignUpState extends State<SignUp> {
                     focusColor: Color(0xffD7263D),
                   ),
                 ),
-
                 SizedBox(
                   width: double.infinity,
-                  child: TextButton(
+                  child: ElevatedButton(
                     onPressed: handleSignUp,
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                        Color(0xffD7263D),
-                      ),
-                      shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          // side: BorderSide(color: Colors.red),
-                        ),
-                      ),
-                      foregroundColor: WidgetStatePropertyAll(
-                        Color(0xffEAEAEA),
-                      ),
-                      padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                        EdgeInsetsGeometry.fromLTRB(30, 10, 30, 10),
-                      ),
-                    ),
-                    child: Text(
-                      "Sign Up",
-                      style: TextStyle(
-                        fontFamily: 'Ubuntu',
-                        fontSize: 20,
-                        // fontWeight: FontWeight.w500,
-                        letterSpacing: 0.5,
-                        color: Color(0xffEAEAEA),
-                      ),
-                    ),
+                    child: const Text("Sign Up"),
                   ),
                 ),
               ],
             ),
 
             Row(
-              spacing: 20,
-              children: <Widget>[
-                Expanded(
-                  child: Divider(color: Color.fromARGB(255, 95, 95, 95)),
-                ),
-
-                Text(
-                  "Or Continue with",
-                  style: TextStyle(fontSize: 15, fontFamily: 'Ubuntu'),
-                ),
-
-                Expanded(
-                  child: Divider(color: Color.fromARGB(255, 95, 95, 95)),
-                ),
-              ],
-            ),
-
-            SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                onPressed: handleSignUp,
-                style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(
-                    Color.fromARGB(115, 93, 93, 94),
-                  ),
-                  shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(
-                        color: Color.fromARGB(169, 101, 102, 102),
-                      ),
-                    ),
-                  ),
-                  // foregroundColor: WidgetStatePropertyAll(Color(0xffEAEAEA)),
-                  padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                    EdgeInsetsGeometry.fromLTRB(30, 10, 30, 10),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: 15,
-                  children: [
-                    Image(
-                      image: AssetImage('assets/icons/google-icon.png'),
-                      fit: BoxFit.scaleDown,
-                      width: 25,
-                    ),
-                    // ImageIcon(AssetImage('assets/icons/google-icon.png'), color: Color.fromARGB(255, 215, 38, 62),),
-                    Text(
-                      "Continue with Google",
-                      style: TextStyle(
-                        fontFamily: 'OpenSans',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.5,
-                        color: Color(0xffEAEAEA),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            Row(
-              spacing: 3,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  "Already have an account?",
-                  style: TextStyle(
-                    fontFamily: 'Ubuntu',
-                    fontSize: 15,
-                    color: Color(0xffEAEAEA),
-                  ),
-                ),
+                const Text("Already have an account? "),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SignIn()),
+                      MaterialPageRoute(
+                        builder: (_) => const SignIn(),
+                      ),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     "Login",
-                    style: TextStyle(
-                      fontFamily: 'Ubuntu',
-                      fontSize: 15,
-                      color: Color(0xffD7263D),
-                    ),
+                    style: TextStyle(color: Color(0xffD7263D)),
                   ),
                 ),
               ],

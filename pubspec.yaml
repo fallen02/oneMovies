@@ -37,6 +37,9 @@ dependencies:
   appwrite: ^19.0.0
   flutter_svg: ^2.2.1
   provider: ^6.1.5+1
+  flutter_riverpod: ^3.2.0
+  dio: ^5.9.0
+  shared_preferences: ^2.5.4
 
 dev_dependencies:
   flutter_test:

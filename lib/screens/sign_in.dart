@@ -1,19 +1,21 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onemovies/providers/auth_provider.dart';
 import 'package:onemovies/screens/main_page.dart';
 import 'package:onemovies/screens/sign_up.dart';
-import 'package:onemovies/utils/appwrite/auth.dart';
 import 'package:onemovies/utils/icon_fonts.dart';
-import 'package:provider/provider.dart';
 
-class SignIn extends StatefulWidget {
+class SignIn extends ConsumerStatefulWidget {
   const SignIn({super.key});
 
   @override
-  State<SignIn> createState() => _SignInState();
+  ConsumerState<SignIn> createState() => _SignInState();
 }
 
-class _SignInState extends State<SignIn> {
+class _SignInState extends ConsumerState<SignIn> {
+
+  
   bool _passwordHidden = false;
 
   late final TextEditingController _email;
@@ -21,9 +23,9 @@ class _SignInState extends State<SignIn> {
 
   @override
   void initState() {
+    super.initState();
     _email = TextEditingController();
     _password = TextEditingController();
-    super.initState();
   }
 
   @override
@@ -33,38 +35,37 @@ class _SignInState extends State<SignIn> {
     super.dispose();
   }
 
-  void handleSubmit() async {
+  Future<void> handleSubmit() async {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [CircularProgressIndicator()],
-          ),
-        );
-      },
+      builder: (_) => const Center(child: CircularProgressIndicator()),
     );
 
     try {
-      final Auth appwrite = context.read<Auth>();
-      await appwrite.loginWithEmailandPassword(
-        email: _email.text,
-        password: _password.text,
-      );
-      Navigator.pop(context);
-      const snackbar = SnackBar(content: Text("Logged In successfully"));
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
-      Navigator.push(
+      await ref
+          .read(authProvider.notifier)
+          .loginWithEmailandPassword(
+            email: _email.text.trim(),
+            password: _password.text.trim(),
+          );
+
+      if (mounted) Navigator.pop(context);
+
+      ScaffoldMessenger.of(
         context,
-        MaterialPageRoute(builder: (context) => MainPage()),
+      ).showSnackBar(const SnackBar(content: Text("Logged in successfully")));
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MainPage()),
       );
     } on AppwriteException catch (e) {
-      Navigator.pop(context);
-      final snackbar = SnackBar(content: Text(e.message.toString()));
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      if (mounted) Navigator.pop(context);
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message ?? "Login failed")));
     }
   }
 
@@ -72,48 +73,29 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(10, 50, 10, 50),
-
-        // alignment: Alignment.topCenter,
+        padding: const EdgeInsets.fromLTRB(10, 50, 10, 50),
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           spacing: 20,
           children: [
             Row(
               children: [
                 IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Broken.arrow_left_2,
-                    size: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Broken.arrow_left_2, size: 30),
                 ),
               ],
             ),
-            Column(
-              // crossAxisAlignment: CrossAxisAlignment.center,
-              spacing: 20,
-              children: [
-                Image.network(
-                  'https://placehold.co/150.png',
-                  loadingBuilder: (context, child, progress) {
-                    return progress == null
-                        ? child
-                        : LinearProgressIndicator(
-                            backgroundColor: Color(0xffD7263D),
-                          );
-                  },
-                ),
 
+            Column(
+              spacing: 20,
+              children: const [
+                Image(image: AssetImage('assets/icons/icon.png'), width: 150),
                 Text(
                   "Sign In",
                   style: TextStyle(
                     fontFamily: 'OpenSans',
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 0.4,
                   ),
                 ),
               ],
@@ -199,133 +181,30 @@ class _SignInState extends State<SignIn> {
                     focusColor: Color(0xffD7263D),
                   ),
                 ),
-
                 SizedBox(
                   width: double.infinity,
-                  child: TextButton(
+                  child: ElevatedButton(
                     onPressed: handleSubmit,
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                        Color(0xffD7263D),
-                      ),
-                      shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          // side: BorderSide(color: Colors.red),
-                        ),
-                      ),
-                      foregroundColor: WidgetStatePropertyAll(
-                        Color(0xffEAEAEA),
-                      ),
-                      padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                        EdgeInsetsGeometry.fromLTRB(30, 10, 30, 10),
-                      ),
-                    ),
-                    child: Text(
-                      "Sign In",
-                      style: TextStyle(
-                        fontFamily: 'Ubuntu',
-                        fontSize: 20,
-                        // fontWeight: FontWeight.w500,
-                        letterSpacing: 0.5,
-                        color: Color(0xffEAEAEA),
-                      ),
-                    ),
+                    child: const Text("Sign In"),
                   ),
                 ),
               ],
             ),
 
             Row(
-              spacing: 20,
-              children: <Widget>[
-                Expanded(
-                  child: Divider(color: Color.fromARGB(255, 95, 95, 95)),
-                ),
-
-                Text(
-                  "Or Continue with",
-                  style: TextStyle(fontSize: 15, fontFamily: 'Ubuntu'),
-                ),
-
-                Expanded(
-                  child: Divider(color: Color.fromARGB(255, 95, 95, 95)),
-                ),
-              ],
-            ),
-
-            SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                onPressed: handleSubmit,
-                style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(
-                    Color.fromARGB(115, 93, 93, 94),
-                  ),
-                  shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(
-                        color: Color.fromARGB(169, 101, 102, 102),
-                      ),
-                    ),
-                  ),
-                  // foregroundColor: WidgetStatePropertyAll(Color(0xffEAEAEA)),
-                  padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                    EdgeInsetsGeometry.fromLTRB(30, 10, 30, 10),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: 15,
-                  children: [
-                    Image(
-                      image: AssetImage('assets/icons/google-icon.png'),
-                      fit: BoxFit.scaleDown,
-                      width: 25,
-                    ),
-                    // ImageIcon(AssetImage('assets/icons/google-icon.png'), color: Color.fromARGB(255, 215, 38, 62),),
-                    Text(
-                      "Continue with Google",
-                      style: TextStyle(
-                        fontFamily: 'OpenSans',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.5,
-                        color: Color(0xffEAEAEA),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            Row(
-              spacing: 3,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  "Don't have an acount?",
-                  style: TextStyle(
-                    fontFamily: 'Ubuntu',
-                    fontSize: 15,
-                    color: Color(0xffEAEAEA),
-                  ),
-                ),
+                const Text("Don't have an account? "),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SignUp()),
+                      MaterialPageRoute(builder: (_) => const SignUp()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     "Sign Up",
-                    style: TextStyle(
-                      fontFamily: 'Ubuntu',
-                      fontSize: 15,
-                      color: Color(0xffD7263D),
-                    ),
+                    style: TextStyle(color: Color(0xffD7263D)),
                   ),
                 ),
               ],

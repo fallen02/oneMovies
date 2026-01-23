@@ -1,0 +1,99 @@
+import 'package:flutter/material.dart';
+import 'package:onemovies/models/home.dart';
+import 'package:onemovies/screens/tabs/components/tick_eps.dart';
+import 'package:onemovies/screens/tabs/components/tick_icon.dart';
+import 'package:onemovies/screens/tabs/components/tick_quality.dart';
+import 'package:onemovies/utils/icon_fonts.dart';
+
+class SingleBanner extends StatefulWidget {
+  final Spotlight spotlight;
+  const SingleBanner({super.key, required this.spotlight});
+
+  @override
+  State<SingleBanner> createState() => _SingleBannerState();
+}
+
+class _SingleBannerState extends State<SingleBanner> {
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final spotlight = widget.spotlight;
+    return InkWell(
+      onTap: () {print(spotlight.id);},
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          ClipRRect(
+            // borderRadius: BorderRadius.circular(16),
+            child: Image.network(spotlight.banner, fit: BoxFit.cover),
+          ),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.transparent, Colors.black87],
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            bottom: 5,
+            left: 10,
+            right: 10,
+            child: SizedBox(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                // mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    spotlight.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'Open Sans',
+                      fontSize: 25,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    spotlight.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: colors.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+
+                  SizedBox(height: 10),
+
+                  Row(
+                    spacing: 10,
+                    children: [
+                      TickIcon(
+                        text: spotlight.type.name,
+                        icon: Broken.play_circle,
+                      ),
+                      TickIcon(text: spotlight.duration, icon: Broken.clock),
+                      TickIcon(
+                        text: spotlight.releaseDate,
+                        icon: Broken.calendar,
+                      ),
+                      // SizedBox(width: 15,),
+                      TickQuality(quality: spotlight.quality),
+                      TickEps(sub: spotlight.sub, dub: spotlight.dub),
+                    ],
+                  ),
+
+                  SizedBox(height: 10),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

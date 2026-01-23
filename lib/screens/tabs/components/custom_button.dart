@@ -20,10 +20,11 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return SizedBox(
       // width: double.infinity,
       child: TextButton(
-        onPressed: () {},
+        onPressed: onPressed,
         style: ButtonStyle(
           shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -43,13 +44,13 @@ class CustomButton extends StatelessWidget {
                     style: TextStyle(
                       fontFamily: 'Ubuntu',
                       fontSize: 15,
-                      // color: Colors.white70,
+                      color: colors.onSurface,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(sufixiIcon, size: 20),
+            Icon(sufixiIcon, size: 20, color: colors.onSurface,),
           ],
         ),
       ),

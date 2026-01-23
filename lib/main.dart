@@ -1,35 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onemovies/providers/auth_provider.dart';
+// import 'package:onemovies/providers/onboard_provider.dart';
+// import 'package:onemovies/screens/home.dart';
 import 'package:onemovies/screens/main_page.dart';
 import 'package:onemovies/screens/sign_in.dart';
 import 'package:onemovies/utils/appwrite/auth.dart';
-import 'package:onemovies/utils/theme/theme.dart';
-import 'package:provider/provider.dart';
+import 'package:onemovies/utils/theme/custom_theme.dart';
+
 
 void main() {
   // runApp(const MyApp());
 
-  runApp(ChangeNotifierProvider(create: ((context) => Auth()), child: MyApp()));
+  // runApp(ChangeNotifierProvider(create: ((context) => Auth()), child: MyApp()));
+
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    )
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    final value = context.watch<Auth>().status;
-    // final user = context.watch<Auth>().currentUser;
-    // print(value);
+  Widget build(BuildContext context, WidgetRef ref) {
+    // final hasSeenOnboarding = ref.watch(onBoardingProvider);
+    final authStatus = ref.watch(authProvider).status;
+
     return MaterialApp(
       title: 'One Movies',
-      theme: TAppTheme.lightTheme,
-      darkTheme: TAppTheme.darkTheme,
-      // home: const HomeScreen(title: 'One Movies'),
-      home: value == AuthStatus.uninitialized
-          ? const Scaffold(body: Center(child: CircularProgressIndicator()))
-          : value == AuthStatus.authenticated
-          ? const MainPage()
-          : const SignIn(),
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+      home: 
+      // !hasSeenOnboarding
+      //     ? const HomeScreen()
+      //     : 
+          authStatus == AuthStatus.uninitialized
+              ? const Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : authStatus == AuthStatus.authenticated
+                  ? const MainPage()
+                  : const SignIn(),
     );
   }
 }
+

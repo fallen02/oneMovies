@@ -1,118 +1,99 @@
 import 'package:flutter/material.dart';
+import 'package:onemovies/screens/sign_in.dart';
+import 'package:onemovies/screens/tabs/components/custom_text_button.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key, required this.title});
-  final String title;
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
-          padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
-          child: Column(
-            spacing: 50,
-            children: [
-              Image.network(
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Scaffold(
+      body: SingleChildScrollView(
+        // padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 🖼 Hero Image
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(
                 'https://placehold.co/400x600.png',
+                height: 600,
+                width: double.infinity,
+                fit: BoxFit.cover,
                 loadingBuilder: (context, child, progress) {
                   return progress == null
                       ? child
-                      : LinearProgressIndicator(
-                          backgroundColor: Color(0xffD7263D),
-                        );
+                      : const LinearProgressIndicator();
                 },
               ),
-              Column(
-                spacing: 25,
+            ),
+
+            const SizedBox(height: 24),
+
+            // 📝 Title
+            Padding(
+              padding: EdgeInsetsGeometry.all(10),
+
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text.rich(
+                  Text.rich(
+                    TextSpan(
+                      style: TextStyle(
+                        fontFamily: 'Ubuntu',
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xffEAEAEA),
+                      ),
+                      text: "Welcome to ",
+                      children: [
                         TextSpan(
-                          style: TextStyle(
-                            fontFamily: 'Ubuntu',
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xffEAEAEA),
-                          ),
-                          text: "Welcome to ",
-                          children: [
-                            TextSpan(
-                              style: TextStyle(color: Color(0xffD7263D)),
-                              text: "OneApp",
-                            ),
-                          ],
+                          style: TextStyle(color: colors.primary),
+                          text: "OneApp",
                         ),
-                      ),
-                      Text(
-                        "Just sit back and relax",
-                        style: TextStyle(fontFamily: 'OpenSans', fontSize: 20, color: Color.fromARGB(255, 107, 107, 107)),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
+
+                  // 🧘 Subtitle
+                  Text(
+                    'Just sit back and relax',
+                    style: textTheme.headlineSmall?.copyWith(
+                      color: colors.onSurface.withOpacity(0.6),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // 🔘 Actions
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      TextButton(
-                        // isSemanticButton: ,
+                      Expanded(child: CustomTextButton(
+                        text: 'Sign Up',
+                        type: CustomTextButtonType.secondary,
                         onPressed: () {},
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(
-                            Color(0xffD7263D),
-                          ),
-                          shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              // side: BorderSide(color: Colors.red),
-                            ),
-                          ),
-                          foregroundColor: WidgetStatePropertyAll(
-                            Color(0xffEAEAEA),
-                          ),
-                          padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                            EdgeInsetsGeometry.fromLTRB(30, 10, 30, 10),
-                          ),
-                        ),
-                        child: Text(
-                          "Watch Now",
-                          style: TextStyle(fontSize: 24),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(
-                            Color(0xffEAEAEA),
-                          ),
-                          shape:
-                              WidgetStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  // side: BorderSide(color: Colors.red),
-                                ),
-                              ),
-                          foregroundColor: WidgetStatePropertyAll(
-                            Color(0xffD7263D),
-                          ),
-                          padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                            EdgeInsetsGeometry.fromLTRB(30, 10, 30, 10),
-                          ),
-                        ),
-                        child: Text(
-                          "Login Now",
-                          style: TextStyle(fontSize: 24),
-                        ),
-                      ),
+                      ),),
+                      SizedBox(width: 10,),
+                      Expanded(child: CustomTextButton(
+                        text: 'Sign In',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const SignIn()),
+                          );
+                        },
+                      ),)
                     ],
                   ),
-                  // Text("w")
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

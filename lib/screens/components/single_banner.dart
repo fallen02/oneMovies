@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:onemovies/models/home.dart';
-import 'package:onemovies/screens/tabs/components/tick_eps.dart';
-import 'package:onemovies/screens/tabs/components/tick_icon.dart';
-import 'package:onemovies/screens/tabs/components/tick_quality.dart';
+import 'package:onemovies/screens/components/custom_icon_btn.dart';
+import 'package:onemovies/screens/components/tick_eps.dart';
+import 'package:onemovies/screens/components/tick_icon.dart';
+import 'package:onemovies/screens/components/tick_quality.dart';
 import 'package:onemovies/utils/icon_fonts.dart';
 
 class SingleBanner extends StatefulWidget {
@@ -19,7 +20,9 @@ class _SingleBannerState extends State<SingleBanner> {
     final colors = Theme.of(context).colorScheme;
     final spotlight = widget.spotlight;
     return InkWell(
-      onTap: () {print(spotlight.id);},
+      onTap: () {
+        print(spotlight.id);
+      },
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -86,8 +89,23 @@ class _SingleBannerState extends State<SingleBanner> {
                       TickEps(sub: spotlight.sub, dub: spotlight.dub),
                     ],
                   ),
-
                   SizedBox(height: 10),
+                  Row(
+                    children: [
+                      CustomIconBtn(
+                        text: 'Watch Now',
+                        icon: Broken.play,
+                        onPressed: () {},
+                      ),
+                      SizedBox(width: 10,),
+                      CustomIconBtn(
+                        text: 'View Details',
+                        type: CustomTextButtonType.secondary,
+                        icon: Broken.more,
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

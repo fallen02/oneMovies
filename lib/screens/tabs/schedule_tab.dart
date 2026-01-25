@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onemovies/providers/schedule_provider.dart';
-import 'package:onemovies/screens/tabs/components/clock.dart';
-import 'package:onemovies/screens/tabs/components/schedule_tile.dart';
+import 'package:onemovies/screens/components/clock.dart';
+import 'package:onemovies/screens/components/schedule_tile.dart';
 
 class ScheduleTab extends ConsumerWidget {
   const ScheduleTab({super.key});

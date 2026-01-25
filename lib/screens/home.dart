@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:onemovies/screens/sign_in.dart';
-import 'package:onemovies/screens/tabs/components/custom_text_button.dart';
+import 'package:onemovies/screens/components/custom_text_button.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

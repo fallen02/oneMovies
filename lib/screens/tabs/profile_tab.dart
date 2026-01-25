@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onemovies/providers/auth_provider.dart';
-import 'package:onemovies/screens/tabs/components/custom_button.dart';
+import 'package:onemovies/screens/components/custom_button.dart';
 import 'package:onemovies/utils/icon_fonts.dart';
 
 class ProfileTab extends ConsumerStatefulWidget {

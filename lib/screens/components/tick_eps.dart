@@ -26,7 +26,7 @@ class TickEps extends StatelessWidget {
               color: colors.surface.withValues(alpha: 0.6),
               child: Row(
                 children: [
-                  Icon(Broken.music, size: 14, color: colors.onSurface),
+                  Icon(Broken.creative_commons, size: 14, color: colors.onSurface),
                   const SizedBox(width: 4),
                   Text(
                     sub.toString(),

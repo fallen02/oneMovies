@@ -10,6 +10,7 @@ class TickQuality extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1.5),
+      
       decoration: BoxDecoration(
         color: colors.primary.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(3),

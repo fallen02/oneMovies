@@ -36,7 +36,7 @@ class _SpotlightBannerState extends State<SpotlightBanner> {
 
         _controller.animateToPage(
           _currentPage,
-          duration: const Duration(milliseconds: 1000),
+          duration: const Duration(milliseconds: 1500),
           curve: Curves.easeInOut,
         );
       },
@@ -65,7 +65,7 @@ class _SpotlightBannerState extends State<SpotlightBanner> {
             _currentPage = (_currentPage + 1) % widget.itemCount;
             _controller.animateToPage(
         _currentPage,
-        duration: const Duration(milliseconds: 1000),
+        duration: const Duration(milliseconds: 1500),
         curve: Curves.easeInOut,
       );
           });

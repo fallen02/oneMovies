@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final homeResponse = homeResponseFromJson(jsonString);
+
 import 'dart:convert';
 
 HomeResponse homeResponseFromJson(String str) => HomeResponse.fromJson(json.decode(str));
@@ -70,12 +74,24 @@ class LatestEpisode {
 
 enum Type {
     ONA,
-    TV
+    SPECIAL,
+    TV,
+    MOVIE,
+    TV_SHORT,
+    TV_SPECIAL,
+    OVA,
+    MUSIC,
 }
 
 final typeValues = EnumValues({
     "ONA": Type.ONA,
-    "TV": Type.TV
+    "Special": Type.SPECIAL,
+    "TV": Type.TV,
+    "MOVIE": Type.MOVIE,
+    "MUSIC":Type.MUSIC,
+    "TV_SHORT": Type.TV_SHORT,
+    "TV_SPECIAL": Type.TV_SPECIAL,
+    "OVA": Type.OVA
 });
 
 class Spotlight {
@@ -147,9 +163,9 @@ class Spotlight {
 }
 
 class TopAnime {
-    List<Month> today;
-    List<Month> week;
-    List<Month> month;
+    List<Trending> today;
+    List<Trending> week;
+    List<Trending> month;
 
     TopAnime({
         required this.today,
@@ -158,9 +174,9 @@ class TopAnime {
     });
 
     factory TopAnime.fromJson(Map<String, dynamic> json) => TopAnime(
-        today: List<Month>.from(json["today"].map((x) => Month.fromJson(x))),
-        week: List<Month>.from(json["week"].map((x) => Month.fromJson(x))),
-        month: List<Month>.from(json["month"].map((x) => Month.fromJson(x))),
+        today: List<Trending>.from(json["today"].map((x) => Trending.fromJson(x))),
+        week: List<Trending>.from(json["week"].map((x) => Trending.fromJson(x))),
+        month: List<Trending>.from(json["month"].map((x) => Trending.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -170,51 +186,31 @@ class TopAnime {
     };
 }
 
-class Month {
+class Trending {
     String id;
     String title;
     String poster;
+    String? number;
 
-    Month({
+    Trending({
         required this.id,
         required this.title,
         required this.poster,
+        this.number,
     });
 
-    factory Month.fromJson(Map<String, dynamic> json) => Month(
+    factory Trending.fromJson(Map<String, dynamic> json) => Trending(
         id: json["id"],
         title: json["title"],
         poster: json["poster"],
+        number: json["number"],
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
         "title": title,
         "poster": poster,
-    };
-}
-
-class Trending {
-    String number;
-    String id;
-    String title;
-
-    Trending({
-        required this.number,
-        required this.id,
-        required this.title,
-    });
-
-    factory Trending.fromJson(Map<String, dynamic> json) => Trending(
-        number: json["number"],
-        id: json["id"],
-        title: json["title"],
-    );
-
-    Map<String, dynamic> toJson() => {
         "number": number,
-        "id": id,
-        "title": title,
     };
 }
 

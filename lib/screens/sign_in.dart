@@ -14,8 +14,6 @@ class SignIn extends ConsumerStatefulWidget {
 }
 
 class _SignInState extends ConsumerState<SignIn> {
-
-  
   bool _passwordHidden = false;
 
   late final TextEditingController _email;

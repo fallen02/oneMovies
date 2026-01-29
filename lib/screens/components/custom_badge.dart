@@ -36,6 +36,7 @@ class CustomBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: background.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(6),
+        border: BoxBorder.all(color: colors.primary)
       ),
       child: Text(
         text,

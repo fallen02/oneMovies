@@ -18,7 +18,7 @@ class TickIcon extends StatelessWidget {
         Text(
           text,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: colors.onSurface.withValues(alpha: 0.8),
+            color: Colors.white70,
           ),
         ),
       ],

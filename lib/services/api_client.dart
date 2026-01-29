@@ -6,7 +6,7 @@ class ApiClient{
   ApiClient() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://api-on-anime.vercel.app/anime',
+        baseUrl: 'https://api-on-anime.vercel.app',
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
         headers: {

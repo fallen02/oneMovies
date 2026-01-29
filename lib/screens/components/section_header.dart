@@ -15,9 +15,11 @@ class SectionHeader extends StatelessWidget {
       children: [
         Text(
           text,
-          style: Theme.of(
-            context,
-          ).textTheme.headlineSmall?.copyWith(color: colors.onSurface, fontFamily: 'Ubuntu', fontSize: 20),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            color: colors.onSurface,
+            fontFamily: 'Ubuntu',
+            fontSize: 20,
+          ),
         ),
         InkWell(
           onTap: onTap,

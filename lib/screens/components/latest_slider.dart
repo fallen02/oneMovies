@@ -3,7 +3,7 @@ import 'package:onemovies/models/home.dart';
 import 'package:onemovies/screens/components/small_card.dart';
 
 class LatestSlider extends StatefulWidget {
-  final List<LatestEpisode> latestEpisode;
+  final List<Latest> latestEpisode;
   const LatestSlider({super.key, required this.latestEpisode});
 
   @override
@@ -31,9 +31,10 @@ class _LatestSliderState extends State<LatestSlider> {
               id: item.id,
               title: item.title,
               poster: item.poster,
-              epiNo: item.episodeNo,
-              runtime: item.runtime,
-              type: item.type.name,
+              epiNo: item.sub.toString(),
+              // runtime: item.runtime,
+              type: item.mediaType.name,
+
             ),
           );
         },

@@ -5,43 +5,53 @@ import 'package:onemovies/models/schedule.dart';
 import 'package:onemovies/models/search.dart';
 import 'package:onemovies/services/api_client.dart';
 
-
 class ApiService {
   final Dio _dio = ApiClient().dio;
 
+  CancelToken? _searchCancelToken;
+
   Future<ScheduleResponse> fetchSchedule() async {
-    try{
-      final response = await _dio.get('/schedule');
+    try {
+      final response = await _dio.get('/anime/schedule');
       return ScheduleResponse.fromJson(response.data);
-    } on DioException catch (e){
+    } on DioException catch (e) {
       throw Exception(_handleError(e));
     }
   }
 
-  Future<HomeResponse> fetchHome() async{
-    try{
-      final response = await _dio.get('/main');
+  Future<HomeResponse> fetchHome() async {
+    try {
+      final response = await _dio.get('/anikai/main');
       return HomeResponse.fromJson(response.data);
-    } on DioException catch(e){
+    } on DioException catch (e) {
       throw Exception(_handleError(e));
     }
   }
 
   //Fetches Anime Details
-  Future<AnimeInfo> fetchInfo(String id) async{
-    try{
-      final response = await _dio.get('/info/$id');
-      return AnimeInfo.fromJson(response.data);
-    } on DioException catch(e){
+  Future<InfoResponse> fetchInfo(String id) async {
+    try {
+      final response = await _dio.get('/anikai/info/$id');
+      return InfoResponse.fromJson(response.data);
+    } on DioException catch (e) {
       throw Exception(_handleError(e));
     }
   }
 
-    Future<SearchResponse> search(String query) async{
-    try{
-      final response = await _dio.get('/search/$query');
-      return SearchResponse.fromJson(response.data);
-    } on DioException catch(e){
+  Future<List<SearchResponse>> search(String query) async {
+
+    _searchCancelToken?.cancel('New Search Startd');
+    _searchCancelToken = CancelToken();
+
+    try {
+      final response = await _dio.get('/search/$query', cancelToken: _searchCancelToken);
+      return (response.data as List)
+          .map((e) => SearchResponse.fromJson(e))
+          .toList();
+    } on DioException catch (e) {
+      if(CancelToken.isCancel(e)) {
+        return [];
+      }
       throw Exception(_handleError(e));
     }
   }

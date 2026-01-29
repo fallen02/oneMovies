@@ -9,47 +9,55 @@ List<SearchResponse> searchResponseFromJson(String str) => List<SearchResponse>.
 String searchResponseToJson(List<SearchResponse> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class SearchResponse {
-    String id;
-    String title;
-    String url;
-    String image;
-    String duration;
-    String japaneseTitle;
-    Type type;
-    bool nsfw;
-    int sub;
-    int dub;
-    int episodes;
+  String id;
+  String title;
+  String url;
+  String image;
+  String? duration;
+  String japaneseTitle;
+  Type type;
+  bool nsfw;
+  int sub;
+  int dub;
+  int episodes;
 
-    SearchResponse({
-        required this.id,
-        required this.title,
-        required this.url,
-        required this.image,
-        required this.duration,
-        required this.japaneseTitle,
-        required this.type,
-        required this.nsfw,
-        required this.sub,
-        required this.dub,
-        required this.episodes,
-    });
+  SearchResponse({
+    required this.id,
+    required this.title,
+    required this.url,
+    required this.image,
+    this.duration,
+    required this.japaneseTitle,
+    required this.type,
+    required this.nsfw,
+    required this.sub,
+    required this.dub,
+    required this.episodes,
+  });
 
-    factory SearchResponse.fromJson(Map<String, dynamic> json) => SearchResponse(
+  static Type parseType(dynamic value) {
+  if (value == null) return Type.TV;
+
+  final key = value.toString().toUpperCase();
+  return typeValues.map[key] ?? Type.TV;
+}
+
+  factory SearchResponse.fromJson(Map<String, dynamic> json) =>
+      SearchResponse(
         id: json["id"],
         title: json["title"],
         url: json["url"],
         image: json["image"],
-        duration: json["duration"],
+        duration: json["duration"], // nullable-safe
         japaneseTitle: json["japaneseTitle"],
-        type: typeValues.map[json["type"]]!,
-        nsfw: json["nsfw"],
-        sub: json["sub"],
-        dub: json["dub"],
-        episodes: json["episodes"],
-    );
+        type: parseType(json["type"]), // ✅ SAFE
+        nsfw: json["nsfw"] ?? false,
+        sub: json["sub"] ?? 0,
+        dub: json["dub"] ?? 0,
+        episodes: json["episodes"] ?? 0,
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "title": title,
         "url": url,
@@ -61,7 +69,7 @@ class SearchResponse {
         "sub": sub,
         "dub": dub,
         "episodes": episodes,
-    };
+      };
 }
 
 enum Type {
@@ -76,15 +84,16 @@ enum Type {
 }
 
 final typeValues = EnumValues({
-    "ONA": Type.ONA,
-    "Special": Type.SPECIAL,
-    "TV": Type.TV,
-    "MOVIE": Type.MOVIE,
-    "MUSIC":Type.MUSIC,
-    "TV_SHORT": Type.TV_SHORT,
-    "TV_SPECIAL": Type.TV_SPECIAL,
-    "OVA": Type.OVA
+  "ONA": Type.ONA,
+  "SPECIAL": Type.SPECIAL,
+  "TV": Type.TV,
+  "MOVIE": Type.MOVIE,
+  "MUSIC": Type.MUSIC,
+  "TV_SHORT": Type.TV_SHORT,
+  "TV_SPECIAL": Type.TV_SPECIAL,
+  "OVA": Type.OVA,
 });
+
 
 class EnumValues<T> {
     Map<String, T> map;

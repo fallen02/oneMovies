@@ -10,6 +10,8 @@ class SmallCard extends StatelessWidget {
   final String? type;
   final String? runtime;
 
+
+
   const SmallCard({
     super.key,
     required this.id,

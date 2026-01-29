@@ -1,216 +1,204 @@
-// To parse this JSON data, do
-//
-//     final animeInfo = animeInfoFromJson(jsonString);
-
 import 'dart:convert';
 
-AnimeInfo animeInfoFromJson(String str) => AnimeInfo.fromJson(json.decode(str));
+InfoResponse infoResponseFromJson(String str) =>
+    InfoResponse.fromJson(json.decode(str));
 
-String animeInfoToJson(AnimeInfo data) => json.encode(data.toJson());
+String infoResponseToJson(InfoResponse data) =>
+    json.encode(data.toJson());
 
-class AnimeInfo {
-  String id;
-  String title;
-  int malId;
-  String japaneseTitle;
-  String image;
-  String description;
-  Type type;
-  String pgRationg;
-  String quality;
-  String duration;
-  bool hasSub;
-  bool hasDub;
-  String totalEps;
-  List<String> genres;
-  String status;
-  String season;
-  List<String> studios;
-  bool hasMoreSeason;
-  List<MoreSeason>? moreSeason;
-  List<Recommendation> recommendations;
-  List<Recommendation> relatedAnime;
+class InfoResponse {
+  final String id;
+  final String aniId;
+  final String title;
+  final String japaneseTitle;
+  final String poster;
+  final String description;
+  final MediaFormat type;
+  final String url;
+  final bool hasSub;
+  final bool hasDub;
+  final int subEps;
+  final int dubEps;
+  final String season;
+  final List<String> genres;
+  final List<Recommendation> recommendations;
+  final List<Relation> relations;
 
-  AnimeInfo({
+  InfoResponse({
     required this.id,
+    required this.aniId,
     required this.title,
-    required this.malId,
     required this.japaneseTitle,
-    required this.image,
+    required this.poster,
     required this.description,
     required this.type,
-    required this.pgRationg,
-    required this.quality,
-    this.duration = '0',
+    required this.url,
     required this.hasSub,
     required this.hasDub,
-    required this.totalEps,
-    required this.genres,
-    required this.status,
+    required this.subEps,
+    required this.dubEps,
     required this.season,
-    required this.studios,
-    required this.hasMoreSeason,
-    this.moreSeason,
+    required this.genres,
     required this.recommendations,
-    required this.relatedAnime,
+    required this.relations,
   });
 
-  factory AnimeInfo.fromJson(Map<String, dynamic> json) => AnimeInfo(
-    id: json["id"],
-    title: json["title"],
-    malId: json["malId"],
-    japaneseTitle: json["japaneseTitle"],
-    image: json["image"],
-    description: json["description"],
-    type: typeValues.map[json["type"]] ?? Type.TV,
-    pgRationg: json["pgRationg"],
-    quality: json["quality"],
-    duration: json["duration"],
-
-    // ✅ DEFENSIVE BOOL PARSING
-    hasSub: json["hasSub"] ?? false,
-    hasDub: json["hasDub"] ?? false,
-    totalEps: json["totalEps"],
-    hasMoreSeason: json["hasMoreSeason"] ?? false,
-
-    genres: List<String>.from(json["genres"].map((x) => x)),
-    status: json["status"],
-    season: json["season"],
-    studios: List<String>.from(json["studios"].map((x) => x)),
-
-    moreSeason: json["moreSeason"] == null
-        ? null
-        : List<MoreSeason>.from(
-            json["moreSeason"].map((x) => MoreSeason.fromJson(x)),
-          ),
-
-    recommendations: List<Recommendation>.from(
-      json["recommendations"].map((x) => Recommendation.fromJson(x)),
-    ),
-    relatedAnime: List<Recommendation>.from(
-      json["relatedAnime"].map((x) => Recommendation.fromJson(x)),
-    ),
-  );
+  factory InfoResponse.fromJson(Map<String, dynamic> json) => InfoResponse(
+        id: json["id"],
+        aniId: json["ani_id"],
+        title: json["title"],
+        japaneseTitle: json["japaneseTitle"],
+        poster: json["poster"],
+        description: json["description"],
+        type: mediaFormatValues.map[json["type"]]!,
+        url: json["url"],
+        hasSub: json["hasSub"],
+        hasDub: json["hasDub"],
+        subEps: json["subEps"],
+        dubEps: json["dubEps"],
+        season: json["season"],
+        genres: List<String>.from(json["genres"]),
+        recommendations: List<Recommendation>.from(
+          json["recommendations"].map((x) => Recommendation.fromJson(x)),
+        ),
+        relations: List<Relation>.from(
+          json["relations"].map((x) => Relation.fromJson(x)),
+        ),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "title": title,
-    "malId": malId,
-    "japaneseTitle": japaneseTitle,
-    "image": image,
-    "description": description,
-    "type": typeValues.reverse[type],
-    "pgRationg": pgRationg,
-    "quality": quality,
-    "duration": duration,
-    "hasSub": hasSub,
-    "hasDub": hasDub,
-    "totalEps": totalEps,
-    "genres": List<dynamic>.from(genres.map((x) => x)),
-    "status": status,
-    "season": season,
-    "studios": List<dynamic>.from(studios.map((x) => x)),
-    "hasMoreSeason": hasMoreSeason,
-    "moreSeason": moreSeason == null
-        ? null
-        : List<dynamic>.from(moreSeason!.map((x) => x.toJson())),
-    "recommendations": List<dynamic>.from(
-      recommendations.map((x) => x.toJson()),
-    ),
-    "relatedAnime": List<dynamic>.from(relatedAnime.map((x) => x.toJson())),
-  };
+        "id": id,
+        "ani_id": aniId,
+        "title": title,
+        "japaneseTitle": japaneseTitle,
+        "poster": poster,
+        "description": description,
+        "type": mediaFormatValues.reverse[type],
+        "url": url,
+        "hasSub": hasSub,
+        "hasDub": hasDub,
+        "subEps": subEps,
+        "dubEps": dubEps,
+        "season": season,
+        "genres": genres,
+        "recommendations":
+            recommendations.map((x) => x.toJson()).toList(),
+        "relations": relations.map((x) => x.toJson()).toList(),
+      };
 }
 
-class MoreSeason {
-  String id;
-  String title;
-  String poster;
-
-  MoreSeason({required this.id, required this.title, required this.poster});
-
-  factory MoreSeason.fromJson(Map<String, dynamic> json) =>
-      MoreSeason(id: json["id"], title: json["title"], poster: json["poster"]);
-
-  Map<String, dynamic> toJson() => {"id": id, "title": title, "poster": poster};
-}
+/* -------------------- RECOMMENDATION -------------------- */
 
 class Recommendation {
-  String id;
-  String title;
-  String url;
-  String image;
-  String? duration;
-  String japaneseTitle;
-  Type type;
-  bool? nsfw;
-  int sub;
-  int dub;
-  int episodes;
+  final String id;
+  final String title;
+  final String url;
+  final String image;
+  final String japaneseTitle;
+  final MediaFormat type;
+  final int sub;
+  final int dub;
+  final int episodes;
 
   Recommendation({
     required this.id,
     required this.title,
     required this.url,
     required this.image,
-    this.duration,
     required this.japaneseTitle,
     required this.type,
-    this.nsfw,
     required this.sub,
     required this.dub,
     required this.episodes,
   });
 
   factory Recommendation.fromJson(Map<String, dynamic> json) => Recommendation(
-    id: json["id"],
-    title: json["title"],
-    url: json["url"],
-    image: json["image"],
-    duration: json["duration"],
-    japaneseTitle: json["japaneseTitle"],
-    type: typeValues.map[json["type"]] ?? Type.TV,
-    nsfw: json["nsfw"],
-    sub: json["sub"],
-    dub: json["dub"],
-    episodes: json["episodes"],
-  );
+        id: json["id"],
+        title: json["title"],
+        url: json["url"],
+        image: json["image"],
+        japaneseTitle: json["japaneseTitle"],
+        type: mediaFormatValues.map[json["type"]]!,
+        sub: json["sub"],
+        dub: json["dub"],
+        episodes: json["episodes"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "title": title,
-    "url": url,
-    "image": image,
-    "duration": duration,
-    "japaneseTitle": japaneseTitle,
-    "type": typeValues.reverse[type],
-    "nsfw": nsfw,
-    "sub": sub,
-    "dub": dub,
-    "episodes": episodes,
-  };
+        "id": id,
+        "title": title,
+        "url": url,
+        "image": image,
+        "japaneseTitle": japaneseTitle,
+        "type": mediaFormatValues.reverse[type],
+        "sub": sub,
+        "dub": dub,
+        "episodes": episodes,
+      };
 }
 
-enum Type { ONA, SPECIAL, TV, MOVIE, TV_SHORT, TV_SPECIAL, OVA, MUSIC }
+/* ------------------------ RELATION ----------------------- */
 
-final typeValues = EnumValues({
-  "ONA": Type.ONA,
-  "Special": Type.SPECIAL,
-  "TV": Type.TV,
-  "MOVIE": Type.MOVIE,
-  "MUSIC": Type.MUSIC,
-  "TV_SHORT": Type.TV_SHORT,
-  "TV_SPECIAL": Type.TV_SPECIAL,
-  "OVA": Type.OVA,
+class Relation {
+  final bool isActive;
+  final String id;
+  final String poster;
+  final String title;
+  final int eps;
+
+  Relation({
+    required this.isActive,
+    required this.id,
+    required this.poster,
+    required this.title,
+    required this.eps,
+  });
+
+  factory Relation.fromJson(Map<String, dynamic> json) => Relation(
+        isActive: json["isActive"],
+        id: json["id"],
+        poster: json["poster"],
+        title: json["title"],
+        eps: json["eps"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "isActive": isActive,
+        "id": id,
+        "poster": poster,
+        "title": title,
+        "eps": eps,
+      };
+}
+
+enum MediaFormat {
+  TV,
+  TV_SHORT,
+  TV_SPECIAL,
+  MOVIE,
+  SPECIAL,
+  OVA,
+  ONA,
+}
+
+final mediaFormatValues = EnumValues({
+  "TV": MediaFormat.TV,
+  "TV_SHORT": MediaFormat.TV_SHORT,
+  "TV_SPECIAL": MediaFormat.TV_SPECIAL,
+  "MOVIE": MediaFormat.MOVIE,
+  "SPECIAL": MediaFormat.SPECIAL,
+  "OVA": MediaFormat.OVA,
+  "ONA": MediaFormat.ONA,
 });
 
 class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
+  final Map<String, T> map;
+  Map<T, String>? _reverseMap;
 
   EnumValues(this.map);
 
   Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
+    _reverseMap ??= map.map((k, v) => MapEntry(v, k));
+    return _reverseMap!;
   }
 }

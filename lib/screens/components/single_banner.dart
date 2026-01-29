@@ -36,7 +36,7 @@ class _SingleBannerState extends State<SingleBanner> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black87],
+                  colors: [const Color.fromARGB(68, 0, 0, 0), Colors.black87],
                 ),
               ),
             ),
@@ -59,19 +59,29 @@ class _SingleBannerState extends State<SingleBanner> {
                       fontFamily: 'Open Sans',
                       fontSize: 25,
                       fontWeight: FontWeight.w500,
+                      color: colors.primary,
                     ),
                   ),
                   Text(
                     spotlight.description,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colors.onSurface.withValues(alpha: 0.6),
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.white70),
                   ),
 
                   SizedBox(height: 10),
-
+                  Text(
+                    spotlight.genres.join(' • '),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontFamily: 'Ubuntu',
+                      letterSpacing: 0.1,
+                      color: Colors.white70,
+                    ),
+                  ),
+                  SizedBox(height: 10),
                   Row(
                     spacing: 10,
                     children: [
@@ -79,7 +89,7 @@ class _SingleBannerState extends State<SingleBanner> {
                         text: spotlight.type.name,
                         icon: Broken.play_circle,
                       ),
-                      TickIcon(text: spotlight.duration, icon: Broken.clock),
+                      // TickIcon(text: spotlight.duration, icon: Broken.clock),
                       TickIcon(
                         text: spotlight.releaseDate,
                         icon: Broken.calendar,
@@ -97,7 +107,7 @@ class _SingleBannerState extends State<SingleBanner> {
                         icon: Broken.play,
                         onPressed: () {},
                       ),
-                      SizedBox(width: 10,),
+                      SizedBox(width: 10),
                       CustomIconBtn(
                         text: 'View Details',
                         type: CustomTextButtonType.secondary,

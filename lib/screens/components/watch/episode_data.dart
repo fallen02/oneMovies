@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onemovies/models/servers.dart';
 
 import 'package:onemovies/providers/selected_anime_episode_provider.dart';
 import 'package:onemovies/providers/selected_server_type_provider.dart';
@@ -22,16 +23,40 @@ class _EpisodeDataState extends ConsumerState<EpisodeData> {
     ref.listenManual(selectedAnimeEpisodeProvider, (_, episode) {
       if (episode == null) return;
 
+      ServerType resolveServerType(ServerResponse server, ServerType current) {
+        if (current == ServerType.sub && server.sub.isNotEmpty) {
+          return ServerType.sub;
+        }
+        if (current == ServerType.dub && server.dub.isNotEmpty) {
+          return ServerType.dub;
+        }
+        if (current == ServerType.hardsub && server.hardsub.isNotEmpty) {
+          return ServerType.hardsub;
+        }
+
+        // fallback priority
+        if (server.sub.isNotEmpty) return ServerType.sub;
+        if (server.dub.isNotEmpty) return ServerType.dub;
+        if (server.hardsub.isNotEmpty) return ServerType.hardsub;
+
+        throw Exception('No servers available');
+      }
+
       ref.listenManual(serverProvider(episode.id), (_, next) {
         next.whenData((server) {
           final selectedType = ref.read(selectedServerTypeProvider);
           final currentTrack = ref.read(selectedTrackProvider);
 
-          final tracks = switch (selectedType) {
+          final resolvedType = resolveServerType(server, selectedType);
+
+          if (resolvedType != selectedType) {
+            ref.read(selectedServerTypeProvider.notifier).state = resolvedType;
+          }
+
+          final tracks = switch (resolvedType) {
             ServerType.sub => server.sub,
             ServerType.dub => server.dub,
             ServerType.hardsub => server.hardsub,
-            _ => const [],
           };
 
           if (tracks.isNotEmpty && !tracks.contains(currentTrack)) {

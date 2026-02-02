@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onemovies/models/sources.dart';
 import 'package:onemovies/providers/stream_link_provider.dart';
+import 'package:onemovies/utils/icon_fonts.dart';
 
 class Player extends ConsumerStatefulWidget {
   const Player({super.key});
@@ -30,13 +31,31 @@ class _PlayerState extends ConsumerState<Player> {
         autoPlay: true,
         fit: BoxFit.contain,
         aspectRatio: 16 / 9,
-        subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
-          fontSize: 15,
-          backgroundColor: Colors.black54,
-        ),
         autoDetectFullscreenDeviceOrientation: true,
         controlsConfiguration: BetterPlayerControlsConfiguration(
           showControls: true,
+          enableMute: false,
+          enableQualities: true,
+          fullscreenEnableIcon: Broken.maximize_circle,
+          fullscreenDisableIcon: Broken.maximize_2,
+          playIcon: Broken.play,
+          pauseIcon: Broken.pause,
+          skipBackIcon: Broken.backward_10_seconds,
+          skipForwardIcon: Broken.forward_10_seconds,
+          pipMenuIcon: Broken.menu_1,
+          playbackSpeedIcon: Broken.timer_1,
+          subtitlesIcon: Broken.creative_commons,
+          audioTracksIcon: Broken.music,
+          qualitiesIcon: Broken.video_tick,
+          overflowMenuIconsColor: Color(0xffD7263D),
+          overflowModalColor: Color(0xff02182B),
+          overflowModalTextColor: Colors.white12,
+          iconsColor: Color(0xffD7263D),
+          enablePlaybackSpeed: false,
+        ),
+        subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
+          fontSize: 18,
+          backgroundColor: Colors.black54,
         ),
       ),
       betterPlayerDataSource: dataSource,
@@ -48,14 +67,11 @@ class _PlayerState extends ConsumerState<Player> {
   @override
   Widget build(BuildContext context) {
     final streamAsync = ref.watch(streamLinkProvider);
-    // final currentTrack = ref.watch(selectedTrackProvider);
-    // print(streamAsync.asData);
 
     return streamAsync.when(
-      // loading: () => const Center(child: CircularProgressIndicator()),
       loading: () => Container(
-        decoration: BoxDecoration(color: Colors.black87),
-        child: AspectRatio(
+        color: Colors.black87,
+        child: const AspectRatio(
           aspectRatio: 16 / 9,
           child: Center(child: CircularProgressIndicator()),
         ),
@@ -89,23 +105,21 @@ class _PlayerState extends ConsumerState<Player> {
     return BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
       video.url,
+      videoFormat: BetterPlayerVideoFormat.hls,
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Linux; Android 13; Pixel 7 Pro) '
             'AppleWebKit/537.36 (KHTML, like Gecko) '
             'Chrome/137.0.0.0 Mobile Safari/537.36',
         'Accept': '*/*',
-        // 'Referer': current,
         'Connection': 'keep-alive',
-        // 'Origin': 'https://your-site.com',
         'Referer': source.refferer.toString(),
       },
-      videoFormat: BetterPlayerVideoFormat.hls,
       subtitles: source.subtitles.map((s) {
         return BetterPlayerSubtitlesSource(
           type: BetterPlayerSubtitlesSourceType.network,
           urls: [s.url],
-          name: s.lang != '' ? s.lang : "Thumbnail",
+          name: s.lang.isNotEmpty ? s.lang : 'Subtitles',
           selectedByDefault: s.kind == 'captions',
         );
       }).toList(),

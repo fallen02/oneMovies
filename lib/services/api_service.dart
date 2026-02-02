@@ -14,7 +14,7 @@ class ApiService {
 
   Future<ScheduleResponse> fetchSchedule() async {
     try {
-      final response = await _dio.get('/anime/schedule');
+      final response = await _dio.get('/anikai/schedule');
       return ScheduleResponse.fromJson(response.data);
     } on DioException catch (e) {
       throw Exception(_handleError(e));

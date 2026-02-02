@@ -28,34 +28,30 @@ class Result {
     String id;
     String title;
     String japaneseTitle;
-    String url;
-    String airingEpisode;
     String airingTime;
+    String airingEpisode;
 
     Result({
         required this.id,
         required this.title,
         required this.japaneseTitle,
-        required this.url,
-        required this.airingEpisode,
         required this.airingTime,
+        required this.airingEpisode,
     });
 
     factory Result.fromJson(Map<String, dynamic> json) => Result(
         id: json["id"],
         title: json["title"],
         japaneseTitle: json["japaneseTitle"],
-        url: json["url"],
-        airingEpisode: json["airingEpisode"],
         airingTime: json["airingTime"],
+        airingEpisode: json["airingEpisode"],
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
         "title": title,
         "japaneseTitle": japaneseTitle,
-        "url": url,
-        "airingEpisode": airingEpisode,
         "airingTime": airingTime,
+        "airingEpisode": airingEpisode,
     };
 }

@@ -1,27 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onemovies/models/home.dart';
+import 'package:onemovies/providers/selected_anime_provider.dart';
+import 'package:onemovies/screens/anime_info.dart';
 import 'package:onemovies/screens/components/custom_icon_btn.dart';
 import 'package:onemovies/screens/components/tick_eps.dart';
 import 'package:onemovies/screens/components/tick_icon.dart';
 import 'package:onemovies/screens/components/tick_quality.dart';
 import 'package:onemovies/utils/icon_fonts.dart';
 
-class SingleBanner extends StatefulWidget {
+class SingleBanner extends ConsumerStatefulWidget {
   final Spotlight spotlight;
   const SingleBanner({super.key, required this.spotlight});
 
   @override
-  State<SingleBanner> createState() => _SingleBannerState();
+  ConsumerState<SingleBanner> createState() => _SingleBannerState();
 }
 
-class _SingleBannerState extends State<SingleBanner> {
+class _SingleBannerState extends ConsumerState<SingleBanner> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final spotlight = widget.spotlight;
     return InkWell(
       onTap: () {
-        print(spotlight.id);
+        // print(spotlight.id);
+        ref.read(selectedAnimeIdProvider.notifier).state = spotlight.id;
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => AnimeInfoScreen()),
+        );
       },
       child: Stack(
         fit: StackFit.expand,
@@ -105,15 +113,18 @@ class _SingleBannerState extends State<SingleBanner> {
                       CustomIconBtn(
                         text: 'Watch Now',
                         icon: Broken.play,
-                        onPressed: () {},
+                        onPressed: () {
+                          ref.read(selectedAnimeIdProvider.notifier).state =
+                              spotlight.id;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AnimeInfoScreen(),
+                            ),
+                          );
+                        },
                       ),
-                      SizedBox(width: 10),
-                      CustomIconBtn(
-                        text: 'View Details',
-                        type: CustomTextButtonType.secondary,
-                        icon: Broken.more,
-                        onPressed: () {},
-                      ),
+                      
                     ],
                   ),
                 ],

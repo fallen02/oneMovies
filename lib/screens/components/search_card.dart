@@ -18,7 +18,7 @@ class SearchCard extends StatelessWidget {
       onTap: () => {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => AnimeInfoScreen(id: result.id)),
+          MaterialPageRoute(builder: (_) => AnimeInfoScreen()),
         ),
       },
       child: ClipRRect(
@@ -166,7 +166,7 @@ class SearchCard extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) =>
-                                      AnimeInfoScreen(id: result.id),
+                                      AnimeInfoScreen(),
                                 ),
                               );
                             },

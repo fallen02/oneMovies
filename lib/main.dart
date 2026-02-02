@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onemovies/providers/auth_provider.dart';
-// import 'package:onemovies/providers/onboard_provider.dart';
-// import 'package:onemovies/screens/home.dart';
 import 'package:onemovies/screens/main_page.dart';
 import 'package:onemovies/screens/sign_in.dart';
 import 'package:onemovies/utils/appwrite/auth.dart';

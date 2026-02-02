@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:onemovies/models/episodes.dart';
 import 'package:onemovies/models/home.dart';
 import 'package:onemovies/models/info.dart';
 import 'package:onemovies/models/schedule.dart';
 import 'package:onemovies/models/search.dart';
+import 'package:onemovies/models/servers.dart';
 import 'package:onemovies/services/api_client.dart';
 
 class ApiService {
@@ -37,10 +39,32 @@ class ApiService {
       throw Exception(_handleError(e));
     }
   }
+  
+
+  // fetches Anime Episodes
+  Future<EpisodeResponse> fetchEpisodes(String id) async {
+    try {
+      final response = await _dio.get('/anikai/episodes/$id');
+      return EpisodeResponse.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception(_handleError(e));
+    }
+  }
+
+  // fetches servers of an episode
+
+  Future<ServerResponse> fetchServers(String id) async{
+    try {
+      final response = await _dio.get('/anikai/server/$id');
+      return ServerResponse.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception(_handleError(e));
+    }
+  }
 
   Future<List<SearchResponse>> search(String query) async {
 
-    _searchCancelToken?.cancel('New Search Startd');
+    _searchCancelToken?.cancel('New Search Started');
     _searchCancelToken = CancelToken();
 
     try {

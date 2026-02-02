@@ -14,7 +14,7 @@ class MoreSeasonSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "More Season",
+          "More Seasons",
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
             color: colors.onSurface,
             fontFamily: 'Ubuntu',
@@ -41,6 +41,8 @@ class MoreSeasonSection extends StatelessWidget {
                   id: item.id,
                   title: item.title,
                   poster: item.poster,
+                  isActive: item.isActive,
+                  createNavigation: false,
 
                 ),
               );

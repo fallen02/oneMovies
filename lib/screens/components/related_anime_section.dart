@@ -44,6 +44,7 @@ class RelatedAnimeSection extends StatelessWidget {
                   poster: item.image,
                   epiNo: item.sub.toString(),
                   type: item.type.name,
+                  createNavigation: false,
 
                 ),
               );

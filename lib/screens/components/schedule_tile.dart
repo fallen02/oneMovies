@@ -28,7 +28,7 @@ class ScheduleTile extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => AnimeInfoScreen(id: id)),
+          MaterialPageRoute(builder: (_) => AnimeInfoScreen()),
         );
       },
       child: Container(

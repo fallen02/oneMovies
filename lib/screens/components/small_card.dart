@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onemovies/providers/selected_anime_provider.dart';
 import 'package:onemovies/screens/anime_info.dart';
 import 'package:onemovies/screens/components/custom_badge.dart';
 
-class SmallCard extends StatelessWidget {
+class SmallCard extends ConsumerWidget {
   final String id;
   final String title;
   final String poster;
   final String? epiNo;
   final String? type;
   final String? runtime;
-
-
+  final bool isActive;
+  final bool createNavigation;
 
   const SmallCard({
     super.key,
@@ -20,18 +22,26 @@ class SmallCard extends StatelessWidget {
     this.epiNo,
     this.runtime,
     this.type,
+    this.isActive = false,
+    this.createNavigation = true,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
+    final Color textColor = isActive ? colors.primary : Colors.white70;
 
-    return InkWell(
-      onTap: () => {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => AnimeInfoScreen(id: id)),
-        ),
+    return ClipRRect(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(5),
+      onTap: () {
+        ref.read(selectedAnimeIdProvider.notifier).state = id;
+        if (createNavigation) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => AnimeInfoScreen()),
+          );
+        }
       },
       child: Container(
         width: 120, // 👈 REQUIRED for horizontal slider
@@ -84,11 +94,11 @@ class SmallCard extends StatelessWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Ubuntu',
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
-                    color: Colors.white70,
+                    color: textColor,
                   ),
                 ),
               ),
@@ -108,6 +118,7 @@ class SmallCard extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

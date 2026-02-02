@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onemovies/providers/info_provider.dart';
+import 'package:onemovies/providers/selected_anime_provider.dart';
+import 'package:onemovies/screens/anime_watch.dart';
 import 'package:onemovies/screens/components/auto_marquee_text.dart';
 import 'package:onemovies/screens/components/expendable_text.dart';
 import 'package:onemovies/screens/components/genre_badge.dart';
@@ -14,8 +16,7 @@ import 'package:onemovies/screens/components/tick_eps.dart';
 import 'package:onemovies/utils/icon_fonts.dart';
 
 class AnimeInfoScreen extends ConsumerStatefulWidget {
-  final String id;
-  const AnimeInfoScreen({super.key, required this.id});
+  const AnimeInfoScreen({super.key});
 
   @override
   ConsumerState<AnimeInfoScreen> createState() => _AnimeInfoState();
@@ -24,7 +25,11 @@ class AnimeInfoScreen extends ConsumerStatefulWidget {
 class _AnimeInfoState extends ConsumerState<AnimeInfoScreen> {
   @override
   Widget build(BuildContext context) {
-    final infoAsync = ref.watch(infoProvider(widget.id));
+    final animeId = ref.watch(selectedAnimeIdProvider);
+    if (animeId == null) {
+      return const Scaffold(body: Center(child: Text('No Anime Selected')));
+    }
+    final infoAsync = ref.watch(infoProvider(animeId));
     final colors = Theme.of(context).colorScheme;
 
     return infoAsync.when(
@@ -33,14 +38,12 @@ class _AnimeInfoState extends ConsumerState<AnimeInfoScreen> {
       error: (error, _) =>
           Scaffold(body: Center(child: Text(error.toString()))),
       data: (animeInfo) {
-
-
         final imageProvider = NetworkImage(animeInfo.poster);
-
+        final watchId = '${animeInfo.id}\$=${animeInfo.aniId}';
         return Scaffold(
           body: RefreshIndicator(
             onRefresh: () async {
-              ref.refresh(infoProvider(widget.id));
+              ref.refresh(infoProvider(animeId));
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -134,19 +137,31 @@ class _AnimeInfoState extends ConsumerState<AnimeInfoScreen> {
                             Row(
                               spacing: 10,
                               children: [
+                                TickBadge(
+                                  text: animeInfo.type.name,
+                                  type: BadgeType.primary,
+                                ),
+                                TickBadge(
+                                  text: animeInfo.rated == '?'
+                                      ? 'Unknown'
+                                      : animeInfo.rated,
+                                  type: BadgeType.primary,
+                                ),
                                 Text(
-                              animeInfo.season,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontFamily: 'Ubuntu',
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            TickBadge(text: animeInfo.type.name, type: BadgeType.primary,),
+                                  animeInfo.season,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontFamily: 'Ubuntu',
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ],
                             ),
-                            TickEps(dub: animeInfo.dubEps, sub: animeInfo.subEps, type: EpsBadgeType.info,)
-
+                            TickEps(
+                              dub: animeInfo.dubEps,
+                              sub: animeInfo.subEps,
+                              type: EpsBadgeType.info,
+                            ),
                           ],
                         ),
 
@@ -160,7 +175,14 @@ class _AnimeInfoState extends ConsumerState<AnimeInfoScreen> {
                               child: InfoScreenBtn(
                                 icon: Broken.play,
                                 text: "Watch Now",
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => AnimeWatch(animeId: watchId,),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                             Expanded(
@@ -200,12 +222,15 @@ class _AnimeInfoState extends ConsumerState<AnimeInfoScreen> {
 
                             if (animeInfo.relations.isNotEmpty)
                               MoreSeasonSection(seasons: animeInfo.relations),
-                            
+
                             // SizedBox(height: 20,),
                             // RelatedAnimeSection(seasons: animeInfo.relatedAnime, headingTxt: "Related Anime"),
-                            SizedBox(height: 20,),
-                            RelatedAnimeSection(seasons: animeInfo.recommendations, headingTxt: "Recommended Anime"),
-                            SizedBox(height: 30,)
+                            SizedBox(height: 20),
+                            RelatedAnimeSection(
+                              seasons: animeInfo.recommendations,
+                              headingTxt: "Recommended Anime",
+                            ),
+                            SizedBox(height: 30),
                           ],
                         ),
                       ],
@@ -220,5 +245,3 @@ class _AnimeInfoState extends ConsumerState<AnimeInfoScreen> {
     );
   }
 }
-
-

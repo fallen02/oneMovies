@@ -6,6 +6,8 @@ InfoResponse infoResponseFromJson(String str) =>
 String infoResponseToJson(InfoResponse data) =>
     json.encode(data.toJson());
 
+/* ======================= INFO RESPONSE ======================= */
+
 class InfoResponse {
   final String id;
   final String aniId;
@@ -14,6 +16,7 @@ class InfoResponse {
   final String poster;
   final String description;
   final MediaFormat type;
+  final String rated;
   final String url;
   final bool hasSub;
   final bool hasDub;
@@ -32,6 +35,7 @@ class InfoResponse {
     required this.poster,
     required this.description,
     required this.type,
+    required this.rated,
     required this.url,
     required this.hasSub,
     required this.hasDub,
@@ -50,20 +54,28 @@ class InfoResponse {
         japaneseTitle: json["japaneseTitle"],
         poster: json["poster"],
         description: json["description"],
-        type: mediaFormatValues.map[json["type"]]!,
+        type: mediaFormatValues.map[json["type"]] ?? MediaFormat.TV,
+        rated: json["rated"],
         url: json["url"],
         hasSub: json["hasSub"],
         hasDub: json["hasDub"],
         subEps: json["subEps"],
         dubEps: json["dubEps"],
         season: json["season"],
-        genres: List<String>.from(json["genres"]),
-        recommendations: List<Recommendation>.from(
-          json["recommendations"].map((x) => Recommendation.fromJson(x)),
-        ),
-        relations: List<Relation>.from(
-          json["relations"].map((x) => Relation.fromJson(x)),
-        ),
+        genres: json["genres"] == null
+            ? []
+            : List<String>.from(json["genres"]),
+        recommendations: json["recommendations"] == null
+            ? []
+            : List<Recommendation>.from(
+                json["recommendations"]
+                    .map((x) => Recommendation.fromJson(x)),
+              ),
+        relations: json["relations"] == null
+            ? []
+            : List<Relation>.from(
+                json["relations"].map((x) => Relation.fromJson(x)),
+              ),
       );
 
   Map<String, dynamic> toJson() => {
@@ -74,6 +86,7 @@ class InfoResponse {
         "poster": poster,
         "description": description,
         "type": mediaFormatValues.reverse[type],
+        "rated": rated,
         "url": url,
         "hasSub": hasSub,
         "hasDub": hasDub,
@@ -87,7 +100,7 @@ class InfoResponse {
       };
 }
 
-/* -------------------- RECOMMENDATION -------------------- */
+/* ===================== RECOMMENDATION ===================== */
 
 class Recommendation {
   final String id;
@@ -118,7 +131,7 @@ class Recommendation {
         url: json["url"],
         image: json["image"],
         japaneseTitle: json["japaneseTitle"],
-        type: mediaFormatValues.map[json["type"]]!,
+        type: mediaFormatValues.map[json["type"]] ?? MediaFormat.TV,
         sub: json["sub"],
         dub: json["dub"],
         episodes: json["episodes"],
@@ -137,7 +150,7 @@ class Recommendation {
       };
 }
 
-/* ------------------------ RELATION ----------------------- */
+/* ======================== RELATION ======================== */
 
 class Relation {
   final bool isActive;
@@ -155,7 +168,7 @@ class Relation {
   });
 
   factory Relation.fromJson(Map<String, dynamic> json) => Relation(
-        isActive: json["isActive"],
+        isActive: json["isActive"] ?? false,
         id: json["id"],
         poster: json["poster"],
         title: json["title"],
@@ -170,6 +183,8 @@ class Relation {
         "eps": eps,
       };
 }
+
+/* ======================= ENUMS ======================= */
 
 enum MediaFormat {
   TV,

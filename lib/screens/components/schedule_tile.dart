@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onemovies/providers/selected_anime_provider.dart';
 import 'package:onemovies/screens/anime_info.dart';
 
-class ScheduleTile extends StatelessWidget {
+class ScheduleTile extends ConsumerWidget {
   final String id;
   final String title;
   final String airingEpisode;
@@ -18,7 +20,7 @@ class ScheduleTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
     final episodeNumber = airingEpisode.split(' ').length > 1
         ? airingEpisode.split(' ')[1]
@@ -26,6 +28,7 @@ class ScheduleTile extends StatelessWidget {
 
     return InkWell(
       onTap: () {
+        ref.read(selectedAnimeIdProvider.notifier).state = id;
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => AnimeInfoScreen()),
